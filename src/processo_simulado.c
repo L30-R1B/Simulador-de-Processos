@@ -169,8 +169,8 @@ void copia_processo(struct Processo **pCopia, struct Processo *pOriginal){
     if(pOriginal == NULL)
         return;
     if(*pCopia != NULL)
-        destroi_processo(*pCopia); // Destruir o processo existente se houver
-    *pCopia = cria_processo(pOriginal->idProcesso, pOriginal->idPai); // Criar um novo processo e atribuir ao ponteiro
+        destroi_processo(*pCopia);
+    *pCopia = cria_processo(pOriginal->idProcesso, pOriginal->idPai); 
     (*pCopia)->posiUltimaInstru = pOriginal->posiUltimaInstru;
     (*pCopia)->ultimaInstruExec = pOriginal->ultimaInstruExec;
     (*pCopia)->variavel = pOriginal->variavel;
