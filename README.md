@@ -70,4 +70,6 @@ Para compilar e executar o simulador, siga os passos abaixo:
 1. Compile o programa:
    ```sh
    make
+2. Execute o programa:
+   ```sh
    ./main
