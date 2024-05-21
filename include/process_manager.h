@@ -36,6 +36,7 @@ void destroi_process_manager(ProcessManager *Pm);
 int inicia_processo(ProcessManager *Pm, char *arqNome, unsigned idProcesso, unsigned idPai);
 unsigned troca_de_contexto(ProcessManager *Pm, unsigned idProcesso);
 unsigned troca_de_imagem(ProcessManager *Pm, unsigned idProcesso);
+void escalonamento(ProcessManager *Pm);
 void process_manager(ProcessManager *Pm, char comando);
 
 #endif
