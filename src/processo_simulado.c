@@ -197,8 +197,10 @@ unsigned finaliza_processo(Processos *P[], unsigned numProcessos, unsigned id){
     unsigned indice = pesquisa_processo(P, numProcessos, id);
     if(indice == MAX_PROCESSOS)
         return numProcessos;
-    for(unsigned pAtual = indice; pAtual < numProcessos - 1; pAtual ++)
+    for(unsigned pAtual = indice; pAtual < numProcessos - 1; pAtual ++){
         copia_processo(&P[pAtual], P[pAtual + 1]);
+        P[pAtual]->prioridade --;
+    }
     destroi_processo(P[numProcessos - 1]);
     return numProcessos - 1;
 }

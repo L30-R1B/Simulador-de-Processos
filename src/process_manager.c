@@ -96,7 +96,7 @@ unsigned cria_processo_filho(ProcessManager *Pm, struct Processo *pPai){
     copia_processo(&Pm->pcb->P[Pm->pcb->numProcessos], pPai);
     Pm->pcb->P[Pm->pcb->numProcessos]->idProcesso = id;
     Pm->pcb->P[Pm->pcb->numProcessos]->idPai = pPai->idProcesso;
-    Pm->pcb->P[Pm->pcb->numProcessos]->prioridade += pPai->prioridade + (Pm->pcb->numProcessos + 1);
+    Pm->pcb->P[Pm->pcb->numProcessos]->prioridade = Pm->pcb->P[Pm->pcb->numProcessos - 1]->prioridade + 1;
     Pm->pcb->numProcessos++; 
 
     return Pm->pcb->numProcessos - 1;
