@@ -9,6 +9,9 @@
 #include "../include/reporter.h"
 #include "../include/processo_simulado.h"
 
+#define ESCRITA 1
+#define LEITURA 0
+
 int commander(ProcessManager *Pm) {
     int fd[2];
     pid_t pid;
@@ -25,14 +28,13 @@ int commander(ProcessManager *Pm) {
         return 1;
     }
 
-    if (pid > 0) { // Pai
-        close(fd[LEITURA]); // Fecha a extremidade de leitura do pipe
+    if (pid > 0) {
+        close(fd[LEITURA]);
         FILE *stream;
-        stream = fdopen(fd[ESCRITA], "w"); // Abre um stream de escrita no pipe
+        stream = fdopen(fd[ESCRITA], "w"); 
         
         char comando;
         while (1) {
-            // Lê um comando da entrada padrão e o escreve no pipe
             scanf(" %c", &comando);
             fprintf(stream, "%c", comando);
             fflush(stream); 
@@ -42,16 +44,16 @@ int commander(ProcessManager *Pm) {
             }
             sleep(1);
         }
-        fclose(stream); // Fecha o stream
-        close(fd[ESCRITA]); // Fecha o pipe
-    } else { // Filho
-        close(fd[ESCRITA]); // Fecha a extremidade de escrita do pipe
+        fclose(stream); 
+        close(fd[ESCRITA]);
+    } else {
+        close(fd[ESCRITA]);
 
         char comando;
         while(read(fd[LEITURA], &comando, sizeof(char)) > 0)
             process_manager(Pm, comando);
         
-        close(fd[LEITURA]); // Fecha o pipe
+        close(fd[LEITURA]);
     }
 
     return 0;

@@ -11,6 +11,16 @@
 #include "../include/reporter.h"
 #include "../include/processo_simulado.h"
 
+int arquivo_existe(const char *arqNome) {
+    FILE *arquivo = fopen(arqNome, "r");
+    if (arquivo) {
+        fclose(arquivo);
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
 struct Processo *cria_processo(unsigned idProcesso, unsigned idPai){
     struct Processo *P;
 
@@ -77,10 +87,6 @@ void destroi_processo(struct Processo *P){
 }
 void inserir_instrucoes_arq(struct Processo *P, char *arqNome){
     FILE *f = fopen(arqNome, "r");
-    if(f == NULL){
-        printf("NULO\n\n\n\n");
-        return;
-    }
     char instru;
     while (fscanf(f, "%c", &instru) != EOF){
         if(instru == '\n')
@@ -143,6 +149,10 @@ int executar_instrucao_processo(struct Processo **P, unsigned numInstru){
             return 1;
         break;
         case 'R':
+            if(!arquivo_existe((*P)->programa[numInstru].nomeArq)){
+                (*P)->ultimaInstruExec ++;
+                return -1;
+            }
             unsigned prioridade = (*P)->prioridade;
             unsigned idP = (*P)->idProcesso, idPai = (*P)->idPai;
             char nomeArq[50];

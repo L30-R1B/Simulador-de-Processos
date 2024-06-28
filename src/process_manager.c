@@ -22,7 +22,11 @@ ProcessManager *cria_process_manager(){
     Pm->pB.numProcessos = 0;
     Pm->tempo.t = 0;
 
-    inicia_processo(Pm, "init", 0, UINT_MAX);
+    int resul = inicia_processo(Pm, "init", 0, UINT_MAX);
+    
+    if(resul)
+        return NULL;
+
     troca_de_imagem(Pm, 0);
 
     return Pm;
@@ -146,18 +150,33 @@ void process_manager(ProcessManager *Pm, char comando){
             }
             unsigned retornoInstru = executar_instrucao_processo(&Pm->cpu->p, Pm->cpu->p->ultimaInstruExec);
             if(retornoInstru == 1){
+
+                if(Pm->pcb->numProcessos == MAX_PROCESSOS){
+                    return;
+                }
+
                 unsigned indiceFilho = cria_processo_filho(Pm, Pm->cpu->p);
                 Pm->pcb->P[indiceFilho]->ultimaInstruExec = Pm->cpu->p->ultimaInstruExec + 1;
                 Pm->pcb->P[indiceFilho]->tempoInicio = Pm->tempo.t;
                 Pm->pcb->P[indiceFilho]->totalCpuUsada = 0;
                 Pm->cpu->p->ultimaInstruExec += Pm->cpu->p->programa[Pm->cpu->p->ultimaInstruExec].valor;
+
                 Pm->pP.numProcessos = insere_num_vet(Pm->pP.idProcessos, Pm->pP.numProcessos, Pm->pcb->P[indiceFilho]->idProcesso);
+
+                Pm->pP.numProcessos = remove_num_vet(Pm->pP.idProcessos, Pm->pP.numProcessos, Pm->cpu->p->idProcesso);
+                Pm->pB.numProcessos = insere_num_vet(Pm->pB.idProcessos, Pm->pB.numProcessos, Pm->cpu->p->idProcesso);
+
+                troca_de_contexto(Pm, Pm->pcb->P[indiceFilho]->idProcesso);
+                
+                Pm->tempo.t ++;
+
+                break;
             }else if(retornoInstru == 2){
                 Pm->pP.numProcessos = remove_num_vet(Pm->pP.idProcessos, Pm->pP.numProcessos, Pm->cpu->indiceProcessoAtual);
                 Pm->pB.numProcessos = insere_num_vet(Pm->pB.idProcessos, Pm->pB.numProcessos, Pm->cpu->indiceProcessoAtual);                
             }else if(!retornoInstru)
                 Pm->cpu->p->tempoInicio = Pm->tempo.t;
-            
+
             Pm->tempo.t ++;
             escalonamento(Pm);
         break;

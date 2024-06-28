@@ -21,7 +21,7 @@ void printa_info_processo(struct Processo *P){
         printf("NENHUM, ");
     else
         printf("%.6u, ", P->idPai);
-    printf("prioridade: %u, ", P->prioridade);
+    printf("prioridade: %.8u, ", P->prioridade);
     printf("valor: ");
     if(!P->variavel)
         printf("0000000000, ");
@@ -51,8 +51,11 @@ void process_reporter(ProcessManager *Pm){
     else
         printf("\t--- NULL ---\n");
     printf("::::\n");
-    printf("Fila de processos bloqueados:\n");
+    printf("FILA DE PROCESSOS BLOQUEADOS:\n");
     unsigned indice;
+    if(!Pm->pB.numProcessos){
+        printf("\t--- NULL ---\n");
+    }
     for(unsigned pBAtual = 0; pBAtual < Pm->pB.numProcessos; pBAtual ++){
         indice = pesquisa_processo(Pm->pcb->P, Pm->pcb->numProcessos, Pm->pB.idProcessos[pBAtual]);
         if(indice ==  MAX_PROCESSOS)
@@ -61,6 +64,9 @@ void process_reporter(ProcessManager *Pm){
     }
     printf("::::\n");
     printf("PROCESSOS PRONTOS:\n");
+    if(!Pm->pP.numProcessos){
+        printf("\t--- NULL ---\n");
+    }
     for(unsigned pPAtual = 0; pPAtual < Pm->pP.numProcessos; pPAtual ++){
         indice = pesquisa_processo(Pm->pcb->P, Pm->pcb->numProcessos, Pm->pP.idProcessos[pPAtual]);
         if(indice ==  MAX_PROCESSOS)

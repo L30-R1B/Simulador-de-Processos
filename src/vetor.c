@@ -23,12 +23,3 @@ unsigned remove_num_vet(unsigned *vetor, unsigned tamanho, unsigned num){
         vetor[i] = vetor[i + 1];
     return tamanho - 1;
 }
-void printa_vetor(unsigned *vetor, unsigned tamanho){
-    printf("[");
-    for(unsigned i = 0; i < tamanho; i ++){
-        printf(" %u", vetor[i]);
-        if(i < tamanho - 1)
-            printf(",");
-    }
-    printf(" ]\n");
-}

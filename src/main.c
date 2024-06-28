@@ -13,7 +13,14 @@
 int main(){
     ProcessManager *Pm = cria_process_manager();
 
+    if(Pm == NULL){
+        printf("ARQUIVO DE TEXTO \"init\" NÃO ENCONTRADO NO MESMO DIRETÓRIO DO PROGRAMA ! ! !");
+        return 1;
+    }
+
     commander(Pm);
     
     destroi_process_manager(Pm);
+
+    return 0;
 }

@@ -1,16 +1,18 @@
-S 1000
-A 19
-A 20
-D 23
-A 55
+S 554
+A 28
+A 9
 F 1
-R processosSimulados/file_a
+F 2
 F 1
-R processosSimulados/file_b
-F 1
-R processosSimulados/file_c
-F 1
-R processosSimulados/file_d
-F 1
+F 2
+F 2
+A 62
+A 23
+A 2
 R processosSimulados/file_e
+R processosSimulados/file_d
+D 38
+D 55
+A 34
+B
 E
