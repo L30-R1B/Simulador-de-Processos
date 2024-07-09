@@ -21,6 +21,8 @@ ProcessManager *cria_process_manager(){
     Pm->pE.numProcessos = 0;
     Pm->pB.numProcessos = 0;
     Pm->tempo.t = 0;
+    Pm->tRM.tempoRetornoTotal.t = 0;
+    Pm->tRM.numProcessosFinalizados = 0;
 
     int resul = inicia_processo(Pm, "init", 0, UINT_MAX);
     
@@ -57,43 +59,50 @@ unsigned troca_de_contexto(ProcessManager *Pm, unsigned idProcesso){
     
     if(indice == MAX_PROCESSOS)
         return 1;
-    if(Pm->cpu->p == NULL){
-        copia_processo(&Pm->cpu->p, Pm->pcb->P[indice]);
-    }else{
-        indiceProcessCpuNaPcb = pesquisa_processo(Pm->pcb->P, Pm->pcb->numProcessos, Pm->cpu->p->idProcesso);
-        copia_processo(&Pm->pcb->P[indiceProcessCpuNaPcb], Pm->cpu->p);
-        copia_processo(&Pm->cpu->p, Pm->pcb->P[indice]);
-    }
-    Pm->pE.numProcessos = remove_num_vet(Pm->pE.idProcessos, Pm->pE.numProcessos, Pm->cpu->indiceProcessoAtual);
-    if(pesquisa_num_vet(Pm->pB.idProcessos, Pm->pB.numProcessos, Pm->cpu->indiceProcessoAtual) == MAX_PROCESSOS)
-        Pm->pP.numProcessos = insere_num_vet(Pm->pP.idProcessos, Pm->pP.numProcessos, Pm->cpu->indiceProcessoAtual);
 
-    Pm->cpu->indiceProcessoAtual = Pm->pcb->P[indice]->idProcesso;
-    Pm->pP.numProcessos = remove_num_vet(Pm->pP.idProcessos, Pm->pP.numProcessos, Pm->cpu->indiceProcessoAtual);
-    Pm->pE.numProcessos = insere_num_vet(Pm->pE.idProcessos, Pm->pE.numProcessos, Pm->cpu->indiceProcessoAtual);
+    indiceProcessCpuNaPcb = pesquisa_processo(Pm->pcb->P, Pm->pcb->numProcessos, Pm->cpu->idProcessoAtual);
+    copia_processo(&Pm->pcb->P[indiceProcessCpuNaPcb], Pm->cpu->p);
+    copia_processo(&Pm->cpu->p, Pm->pcb->P[indice]);
+
+    Pm->pE.numProcessos = remove_num_vet(Pm->pE.idProcessos, Pm->pE.numProcessos, Pm->cpu->idProcessoAtual);
+    Pm->pP.numProcessos = insere_num_vet(Pm->pP.idProcessos, Pm->pP.numProcessos, Pm->cpu->idProcessoAtual);
+
+    Pm->cpu->idProcessoAtual = Pm->pcb->P[indice]->idProcesso;
+
+    Pm->pP.numProcessos = remove_num_vet(Pm->pP.idProcessos, Pm->pP.numProcessos, Pm->cpu->idProcessoAtual);
+    Pm->pE.numProcessos = insere_num_vet(Pm->pE.idProcessos, Pm->pE.numProcessos, Pm->cpu->idProcessoAtual);
+
     return 0;
 }
 unsigned troca_de_imagem(ProcessManager *Pm, unsigned idProcesso){
     unsigned indice = pesquisa_processo(Pm->pcb->P, Pm->pcb->numProcessos, idProcesso);
     if(indice == MAX_PROCESSOS)
         return 1;
+
     copia_processo(&Pm->cpu->p, Pm->pcb->P[indice]);
-    Pm->pE.numProcessos = remove_num_vet(Pm->pE.idProcessos, Pm->pE.numProcessos, Pm->cpu->indiceProcessoAtual);
-    Pm->cpu->indiceProcessoAtual = Pm->pcb->P[indice]->idProcesso;
-    Pm->pP.numProcessos = remove_num_vet(Pm->pP.idProcessos, Pm->pP.numProcessos, Pm->cpu->indiceProcessoAtual);
-    Pm->pE.numProcessos = insere_num_vet(Pm->pE.idProcessos, Pm->pE.numProcessos, Pm->cpu->indiceProcessoAtual);
+
+    Pm->pE.numProcessos = remove_num_vet(Pm->pE.idProcessos, Pm->pE.numProcessos, Pm->cpu->idProcessoAtual);
+
+    Pm->cpu->idProcessoAtual = Pm->pcb->P[indice]->idProcesso;
+
+    Pm->pP.numProcessos = remove_num_vet(Pm->pP.idProcessos, Pm->pP.numProcessos, Pm->cpu->idProcessoAtual);
+    Pm->pE.numProcessos = insere_num_vet(Pm->pE.idProcessos, Pm->pE.numProcessos, Pm->cpu->idProcessoAtual);
+
     return 0;
 }
 unsigned cria_processo_filho(ProcessManager *Pm, struct Processo *pPai){
     if(pPai == NULL)
         return MAX_PROCESSOS;
-    else if(Pm->pcb->numProcessos == MAX_PROCESSOS)
-        return MAX_PROCESSOS;
+
+    srand(time(NULL));
+    
     unsigned id = rand() % 1000000;
     while(pesquisa_processo(Pm->pcb->P, Pm->pcb->numProcessos, id) != MAX_PROCESSOS)
         id = rand() % 1000000;
+
     Pm->pcb->P[Pm->pcb->numProcessos] = NULL;
     copia_processo(&Pm->pcb->P[Pm->pcb->numProcessos], pPai);
+
     Pm->pcb->P[Pm->pcb->numProcessos]->idProcesso = id;
     Pm->pcb->P[Pm->pcb->numProcessos]->idPai = pPai->idProcesso;
     Pm->pcb->P[Pm->pcb->numProcessos]->prioridade = Pm->pcb->P[Pm->pcb->numProcessos - 1]->prioridade + 1;
@@ -101,49 +110,58 @@ unsigned cria_processo_filho(ProcessManager *Pm, struct Processo *pPai){
 
     return Pm->pcb->numProcessos - 1;
 }
-void escalonamento(ProcessManager *Pm){
-    
+
+unsigned encontra_index_maior_prioridade(ProcessManager *Pm){
     unsigned prio = 0;
     unsigned indiceProxProcesso = MAX_PROCESSOS;
 
-    if(Pm->cpu->p == NULL){
-        unsigned id = Pm->cpu->indiceProcessoAtual;
-        Pm->pcb->numProcessos = finaliza_processo(Pm->pcb->P, Pm->pcb->numProcessos, Pm->cpu->indiceProcessoAtual);
-        for(unsigned pAtual = 0; pAtual < Pm->pcb->numProcessos; pAtual ++){
-            if(Pm->pcb->P[pAtual]->prioridade >= prio && 
-                pesquisa_num_vet(Pm->pB.idProcessos, Pm->pB.numProcessos, Pm->pcb->P[pAtual]->idProcesso) == MAX_PROCESSOS){
-                    prio = Pm->pcb->P[pAtual]->prioridade;
-                    indiceProxProcesso = pAtual;
-            }
+    for(unsigned pAtual = 0, indiceAtual = 0; pAtual < Pm->pP.numProcessos; pAtual ++){
+        indiceAtual = pesquisa_processo(Pm->pcb->P, Pm->pcb->numProcessos, Pm->pP.idProcessos[pAtual]);
+
+        if(Pm->pcb->P[indiceAtual]->prioridade >= prio){
+            prio = Pm->pcb->P[indiceAtual]->prioridade;
+            indiceProxProcesso = indiceAtual;
         }
-        if(indiceProxProcesso != MAX_PROCESSOS){
-            troca_de_imagem(Pm, Pm->pcb->P[indiceProxProcesso]->idProcesso);
-            Pm->pP.numProcessos = remove_num_vet(Pm->pP.idProcessos, Pm->pP.numProcessos, id);
-        }
-        return;
     }
 
+    return indiceProxProcesso;
+}
 
-    for(unsigned pAtual = 0; pAtual < Pm->pcb->numProcessos; pAtual ++){
-        if(Pm->pcb->P[pAtual]->idProcesso == Pm->cpu->p->idProcesso)
-            continue;
-        if(Pm->pcb->P[pAtual]->prioridade >= prio
-            && pesquisa_num_vet(Pm->pB.idProcessos, Pm->pB.numProcessos, Pm->pcb->P[pAtual]->idProcesso) == MAX_PROCESSOS){
-                prio = Pm->pcb->P[pAtual]->prioridade;
-                indiceProxProcesso = pAtual;
-        }
-    }
+void escalonamento(ProcessManager *Pm){
+
+    unsigned indiceProxProcesso = encontra_index_maior_prioridade(Pm);
+
     if(indiceProxProcesso == MAX_PROCESSOS){
         return;
     }
-    troca_de_contexto(Pm, Pm->pcb->P[indiceProxProcesso]->idProcesso);
-    Pm->pP.numProcessos = remove_num_vet(Pm->pP.idProcessos, Pm->pP.numProcessos, Pm->cpu->indiceProcessoAtual);
+
+    if(Pm->cpu->p == NULL){   
+        if(!Pm->pcb->numProcessos)
+            return;
+        if(Pm->pcb->P[indiceProxProcesso]->ultimaInstruExec >= Pm->pcb->P[indiceProxProcesso]->posiUltimaInstru)
+            Pm->pcb->numProcessos = finaliza_processo(Pm->pcb->P, Pm->pcb->numProcessos, Pm->cpu->idProcessoAtual);
+        troca_de_imagem(Pm, Pm->pcb->P[indiceProxProcesso]->idProcesso);
+    }else
+        troca_de_contexto(Pm, Pm->pcb->P[indiceProxProcesso]->idProcesso);
 }
+
+void bloqueia_processo_cpu(ProcessManager *Pm){
+    Pm->pE.numProcessos = remove_num_vet(Pm->pE.idProcessos, Pm->pE.numProcessos, Pm->cpu->idProcessoAtual);
+    Pm->pB.numProcessos = insere_num_vet(Pm->pB.idProcessos, Pm->pB.numProcessos, Pm->cpu->idProcessoAtual); 
+
+    unsigned indicePcbProcesso = pesquisa_processo(Pm->pcb->P, Pm->pcb->numProcessos, Pm->cpu->idProcessoAtual);
+
+    copia_processo(&Pm->pcb->P[indicePcbProcesso], Pm->cpu->p);
+    destroi_processo(Pm->cpu->p);
+    Pm->cpu->p = NULL;
+}
+
 void process_manager(ProcessManager *Pm, char comando){
+    printf("--- COMANDO %c ---\n", comando);
     switch (comando){
         case 'Q':
             if(Pm->cpu->p == NULL){
-                if(!Pm->pcb->numProcessos)
+                if(!Pm->pP.numProcessos)
                     return;
                 escalonamento(Pm);
                 break;
@@ -163,17 +181,20 @@ void process_manager(ProcessManager *Pm, char comando){
 
                 Pm->pP.numProcessos = insere_num_vet(Pm->pP.idProcessos, Pm->pP.numProcessos, Pm->pcb->P[indiceFilho]->idProcesso);
 
-                Pm->pP.numProcessos = remove_num_vet(Pm->pP.idProcessos, Pm->pP.numProcessos, Pm->cpu->p->idProcesso);
-                Pm->pB.numProcessos = insere_num_vet(Pm->pB.idProcessos, Pm->pB.numProcessos, Pm->cpu->p->idProcesso);
-
                 troca_de_contexto(Pm, Pm->pcb->P[indiceFilho]->idProcesso);
+
+                Pm->pP.numProcessos = remove_num_vet(Pm->pP.idProcessos, Pm->pP.numProcessos, Pm->pcb->P[indiceFilho]->idPai);
+                Pm->pB.numProcessos = insere_num_vet(Pm->pB.idProcessos, Pm->pB.numProcessos, Pm->pcb->P[indiceFilho]->idPai); 
                 
                 Pm->tempo.t ++;
 
                 break;
             }else if(retornoInstru == 2){
-                Pm->pP.numProcessos = remove_num_vet(Pm->pP.idProcessos, Pm->pP.numProcessos, Pm->cpu->indiceProcessoAtual);
-                Pm->pB.numProcessos = insere_num_vet(Pm->pB.idProcessos, Pm->pB.numProcessos, Pm->cpu->indiceProcessoAtual);                
+                bloqueia_processo_cpu(Pm);
+            }else if(retornoInstru == 3){
+                unsigned ind = pesquisa_processo(Pm->pcb->P, Pm->pcb->numProcessos, Pm->cpu->idProcessoAtual);
+                Pm->tRM.numProcessosFinalizados ++;
+                Pm->tRM.tempoRetornoTotal.t += Pm->tempo.t - Pm->pcb->P[ind]->tempoInicio;
             }else if(!retornoInstru)
                 Pm->cpu->p->tempoInicio = Pm->tempo.t;
 
@@ -184,8 +205,8 @@ void process_manager(ProcessManager *Pm, char comando){
             if(Pm->pB.numProcessos){
                 Pm->pP.numProcessos = insere_num_vet(Pm->pP.idProcessos, Pm->pP.numProcessos, Pm->pB.idProcessos[0]);
                 Pm->pB.numProcessos = remove_num_vet(Pm->pB.idProcessos, Pm->pB.numProcessos, Pm->pB.idProcessos[0]);
+                escalonamento(Pm);
             }
-            escalonamento(Pm);
         break;
         case 'P':
             printf("--------\n\n\n\n");
@@ -193,13 +214,12 @@ void process_manager(ProcessManager *Pm, char comando){
                 printa_processo(*Pm->cpu->p);
             process_reporter(Pm);
             printf("--------\n\n\n\n");
+
+            return;
         break;
         case 'T':
-            printf("--------\n\n\n\n");
-            if(Pm->cpu->p != NULL)
-                printa_processo(*Pm->cpu->p);
-            process_reporter(Pm);
-            printf("--------\n\n\n\n");
+            !Pm->tRM.numProcessosFinalizados? printf("--- Não foi possivel exibir o tempo de retorno médio pelo motivo de nenhum processo ter terminado ---\n") : 
+                                              printf("--- Tempo de retorno médio : %.2lf ---\n--- Total Processos Terminados : %u ---\n", (double) (Pm->tRM.tempoRetornoTotal.t / Pm->tRM.numProcessosFinalizados), Pm->tRM.numProcessosFinalizados);
         break;
     }
 }

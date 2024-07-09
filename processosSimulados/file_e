@@ -1,27 +1,19 @@
-S 770
-B
-D 56
-B
-B
+S 234
+D 48
+A 82
+D 84
+D 23
+A 83
+D 2
+A 53
 D 54
-A 30
-D 57
-D 95
-A 80
-A 45
-A 90
-R processosSimulados/file_b
+D 71
+D 72
+B
+A 37
+R processosSimulados/file_d
 F 1
-D 65
-B
-A 68
-A 21
-D 76
-B
-D 85
-B
-R processosSimulados/file_e
-R processosSimulados/file_b
-R processosSimulados/file_a
-A 39
+A 34
+F 2
+F 2
 E

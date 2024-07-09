@@ -1,22 +1,13 @@
-S 951
-D 46
-R processosSimulados/file_d
-A 61
-F 2
-A 79
-F 2
-A 1
-A 78
-A 4
-A 14
-A 75
-A 41
+S 32
+D 64
 B
-D 82
-A 48
-R processosSimulados/file_b
-D 96
+A 60
+R processosSimulados/file_c
+D 67
+A 59
+D 97
 F 2
-A 35
-A 69
+D 98
+D 71
+A 13
 E

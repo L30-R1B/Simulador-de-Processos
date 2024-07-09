@@ -41,9 +41,10 @@ void printa_info_processo(struct Processo *P){
 }
 
 void process_reporter(ProcessManager *Pm){
-    printf("************************************************************************************************************\n");
-    printf("Estado do sistema:\n");
-    printf("************************************************************************************************************\n");
+    printf("TOTAL DE PROCESSOS : %u\n", Pm->pcb->numProcessos);
+    printf("*****************************************************************************************************************************\n");
+    printf("ESTADO DO SISTEMA :\n");
+    printf("*****************************************************************************************************************************\n");
     printf("TEMPO ATUAL : %u\n", Pm->tempo.t);
     printf("PROCESSO EXECUTANDO:\n");
     if(Pm->cpu->p != NULL)
@@ -53,9 +54,9 @@ void process_reporter(ProcessManager *Pm){
     printf("::::\n");
     printf("FILA DE PROCESSOS BLOQUEADOS:\n");
     unsigned indice;
-    if(!Pm->pB.numProcessos){
+    if(!Pm->pB.numProcessos)
         printf("\t--- NULL ---\n");
-    }
+
     for(unsigned pBAtual = 0; pBAtual < Pm->pB.numProcessos; pBAtual ++){
         indice = pesquisa_processo(Pm->pcb->P, Pm->pcb->numProcessos, Pm->pB.idProcessos[pBAtual]);
         if(indice ==  MAX_PROCESSOS)
@@ -73,5 +74,5 @@ void process_reporter(ProcessManager *Pm){
             continue;
         printa_info_processo(Pm->pcb->P[indice]);
     }
-    printf("************************************************************************************************************\n");
+    printf("*****************************************************************************************************************************\n");
 }

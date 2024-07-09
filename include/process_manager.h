@@ -7,11 +7,11 @@
  * @brief Estrutura que representa a CPU e o processo atualmente em execução.
  *
  * @param p Um ponteiro para a estrutura Processo atualmente em execução na CPU.
- * @param indiceProcessoAtual O íd do processo atual.
+ * @param idProcessoAtual O íd do processo atual.
  */
 typedef struct {
     struct Processo *p;
-    unsigned indiceProcessoAtual;
+    unsigned idProcessoAtual;
 }CPU;
 /**
  * @brief Estrutura que representa a tabela de processos (PCB - Process Control Block).
@@ -44,11 +44,22 @@ typedef struct {
 }Tempo;
 
 /**
+ * @brief Estrutura que representa o tempo de retorno medio do sistema.
+ *
+ * @param tempoRetornoTota O valor do tempo de retorno total.
+ * @param numProcessosFinalizados Quantidade de processos finalizados até o momento.
+ */
+typedef struct {
+    Tempo tempoRetornoTotal;
+    unsigned numProcessosFinalizados;
+}TempoRetornoMedio;
+
+/**
  * @brief Estrutura que gerencia os processos no sistema.
  *
  * A estrutura `ProcessManager` centraliza o gerenciamento de processos no sistema,
- * incluindo o tempo do sistema, a CPU, a tabela de processos (PCB) e os estados
- * dos processos (prontos, bloqueados e executando).
+ * incluindo o tempo do sistema, a CPU, a tabela de processos (PCB), os estados
+ * dos processos (prontos, bloqueados e executando) e o tempo de retorno médio.
  *
  * @param tempo A estrutura Tempo que representa o tempo no sistema.
  * @param cpu Um ponteiro para a estrutura CPU que representa a CPU e o processo atualmente em execução.
@@ -56,6 +67,7 @@ typedef struct {
  * @param pP A estrutura ProcessosProntos que contém os IDs dos processos prontos para execução.
  * @param pB A estrutura ProcessosBloqueados que contém os IDs dos processos bloqueados.
  * @param pE A estrutura ProcessosExecutando que contém os IDs dos processos atualmente em execução.
+ * @param tRM Estrutura TempoRetornoMedio que armazena o tempo de retorno médio.
  */
 typedef struct {
     Tempo tempo;
@@ -64,6 +76,7 @@ typedef struct {
     ProcessosProntos pP;
     ProcessosBloqueados pB;
     ProcessosExecutando pE;
+    TempoRetornoMedio tRM;
 }ProcessManager;
 
 /**

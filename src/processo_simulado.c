@@ -119,7 +119,7 @@ void inserir_instrucoes_arq(struct Processo *P, char *arqNome){
 }
 int executar_instrucao_processo(struct Processo **P, unsigned numInstru){
     if(P == NULL)
-        return 2;
+        return -1;
 
     (*P)->totalCpuUsada ++;
     if(numInstru >= (*P)->posiUltimaInstru)

@@ -1,18 +1,11 @@
-S 554
-A 28
-A 9
+S 910
+A 8
+A 43
+A 47
 F 1
-F 2
-F 1
-F 2
-F 2
-A 62
-A 23
-A 2
-R processosSimulados/file_e
-R processosSimulados/file_d
-D 38
-D 55
-A 34
+D 39
 B
+A 42
+F 2
+A 57
 E
