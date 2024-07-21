@@ -1,19 +1,17 @@
-S 234
-D 48
-A 82
-D 84
-D 23
-A 83
-D 2
-A 53
-D 54
-D 71
-D 72
+S 250
+D 15
+A 66
+A 94
+A 26
 B
-A 37
-R processosSimulados/file_d
-F 1
-A 34
+A 97
+B
+D 21
+D 16
 F 2
+B
+A 22
+F 1
+B
 F 2
 E

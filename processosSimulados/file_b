@@ -1,10 +1,18 @@
-S 398
-D 87
+S 471
 A 26
-A 20
+A 95
+R processosSimulados/file_a
+B
+R processosSimulados/file_e
+A 49
+B
+D 63
 F 2
-A 36
+B
+D 99
+D 21
 F 1
-R processosSimulados/file_c
-D 83
+B
+F 1
+D 38
 E

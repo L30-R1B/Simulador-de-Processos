@@ -164,7 +164,6 @@ void process_manager(ProcessManager *Pm, char comando){
                 if(!Pm->pP.numProcessos)
                     return;
                 escalonamento(Pm);
-                break;
             }
             unsigned retornoInstru = executar_instrucao_processo(&Pm->cpu->p, Pm->cpu->p->ultimaInstruExec);
             if(retornoInstru == 1){
@@ -205,7 +204,6 @@ void process_manager(ProcessManager *Pm, char comando){
             if(Pm->pB.numProcessos){
                 Pm->pP.numProcessos = insere_num_vet(Pm->pP.idProcessos, Pm->pP.numProcessos, Pm->pB.idProcessos[0]);
                 Pm->pB.numProcessos = remove_num_vet(Pm->pB.idProcessos, Pm->pB.numProcessos, Pm->pB.idProcessos[0]);
-                escalonamento(Pm);
             }
         break;
         case 'P':
@@ -218,8 +216,8 @@ void process_manager(ProcessManager *Pm, char comando){
             return;
         break;
         case 'T':
-            !Pm->tRM.numProcessosFinalizados? printf("--- Não foi possivel exibir o tempo de retorno médio pelo motivo de nenhum processo ter terminado ---\n") : 
-                                              printf("--- Tempo de retorno médio : %.2lf ---\n--- Total Processos Terminados : %u ---\n", (double) (Pm->tRM.tempoRetornoTotal.t / Pm->tRM.numProcessosFinalizados), Pm->tRM.numProcessosFinalizados);
+            !Pm->tRM.numProcessosFinalizados? printf("--- Não foi possivel exibir o tempo de retorno médio pelo motivo de nenhum processo ter chegado ao fim ---\n") : 
+                                              printf("--- Tempo de retorno médio : %.2lf ---\n--- Total Processos Terminados : %u ---\n", ((double) Pm->tRM.tempoRetornoTotal.t / (double) Pm->tRM.numProcessosFinalizados), Pm->tRM.numProcessosFinalizados);
         break;
     }
 }

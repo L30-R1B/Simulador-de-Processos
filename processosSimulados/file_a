@@ -1,13 +1,12 @@
-S 32
-D 64
+S 401
 B
-A 60
-R processosSimulados/file_c
-D 67
-A 59
-D 97
-F 2
-D 98
+A 14
+B
+A 93
 D 71
-A 13
+A 63
+A 77
+F 1
+D 50
+B
 E

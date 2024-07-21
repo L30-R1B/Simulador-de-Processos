@@ -1,15 +1,17 @@
-S 690
-R processosSimulados/file_a
-F 2
-F 1
-A 70
-D 32
-D 76
-F 2
+S 912
 B
-A 57
-D 78
+D 38
+A 80
 F 2
-R processosSimulados/file_c
-A 30
+F 2
+A 38
+A 89
+B
+F 1
+F 1
+D 44
+B
+D 0
+D 61
+D 29
 E
