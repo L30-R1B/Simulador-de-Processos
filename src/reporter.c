@@ -40,6 +40,7 @@ void printa_info_processo(struct Processo *P){
 
 }
 
+
 void process_reporter(ProcessManager *Pm){
     printf("TOTAL DE PROCESSOS : %u\n", Pm->pcb->numProcessos);
     printf("*****************************************************************************************************************************\n");
